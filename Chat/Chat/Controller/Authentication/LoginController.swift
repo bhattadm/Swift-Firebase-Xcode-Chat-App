@@ -7,14 +7,21 @@
 
 import Foundation
 import UIKit
+import Firebase
+import JGProgressHUD
 
 //protocol AuthenticationControllerProtocol {
 //    var checkFormStatus: Bool{ get }
 //}
+
+protocol AuthenticationDelegate: class {
+   func authenticationComplete()
+}
 class LoginController: UIViewController{
     // MARK: -- Properties
     
     private var viewModel = LoginViewModel()
+    weak var delegate: AuthenticationDelegate?
     
     private let iconImage: UIImageView = {
         let iv = UIImageView()
@@ -60,7 +67,7 @@ class LoginController: UIViewController{
         button.setTitle("Log in", for: .normal)
         button.layer.cornerRadius = 5
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
+        button.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
         button.setTitleColor(.white, for: .normal)
         button.setHeight(height: 35)
         button.isEnabled = false
@@ -77,15 +84,11 @@ class LoginController: UIViewController{
     
     private let emailTextField = CustomTextField(placeholder:"Email")
     
-    private var passwordTextField: CustomTextField {
+    private let passwordTextField: CustomTextField = {
         let passwordtxt = CustomTextField(placeholder: "Password")
-        
-        
-        //passwordtxt.textContentType = .newPassword
-       // passwordtxt.clearsOnBeginEditing = false
         passwordtxt.isSecureTextEntry = true
         return passwordtxt
-    }
+    }()
     
     private let dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
@@ -113,14 +116,14 @@ class LoginController: UIViewController{
     // MARK: -- Selector
     @objc func handleShowSignUp(){
         let controller =  RegistrationController()
+        controller.delegate = delegate
         navigationController?.pushViewController(controller, animated:true)
     }
     
     @objc func textDidChange(sender: UITextField){
         if sender == emailTextField {
             viewModel.email = sender.text
-        }else if sender == passwordTextField{
-            print("I am here")
+        }else if sender == passwordTextField {
             viewModel.password = sender.text
         }
         
@@ -128,20 +131,40 @@ class LoginController: UIViewController{
     }
     
     @objc func handleLogin(){
-        print("Hello1")
+        guard  let email = emailTextField.text else {return}
+        guard  let password = passwordTextField.text else {return}
+        
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Loading"
+        hud.show(in: view)
+       //showLoader(true, withText: "Logging in")
+        
+        AuthService.shared.logUserIn(withEmail: email, password: password) { (result, error) in
+            if let error = error{
+                hud.dismiss()
+                self.showError(error.localizedDescription)
+//                print("Failed to login with error \(error.localizedDescription)")
+                //self.showLoader(false)
+                
+               
+                return
+            }
+           //self.showLoader(false)
+            hud.dismiss()
+            //self.dismiss(animated: true, completion: nil)---megha
+            self.delegate?.authenticationComplete()
+        }
     }
     
     //MARK:-- Helper
     
     func checkFormStatus(){
         if viewModel.formIsValid {
-            print("Hello2");
             loginButton.isEnabled  = true
-            loginButton.backgroundColor = #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1)
+            loginButton.backgroundColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1)
         } else {
-            print("Hello1");
             loginButton.isEnabled  = false
-            loginButton.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
+            loginButton.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
         }
         
     }

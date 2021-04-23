@@ -17,9 +17,7 @@ struct RegistrationViewModel {
        var val =    fullname?.isEmpty == false
                 &&  username?.isEmpty == false
                 &&  email?.isEmpty    == false
-               // && password?.isEmpty  == false
-
-        print(val)
+                && password?.isEmpty  == false
         return val
     }
 }
