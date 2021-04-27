@@ -14,8 +14,6 @@ struct  Message {
     let fromId: String
     var timestamp: Timestamp
     var user: User?
-    
-    
     let isFromCurrentUser: Bool
     var chatPartnerId: String {
         return isFromCurrentUser ? toId :fromId
@@ -26,7 +24,6 @@ struct  Message {
         self.toId = dicitionary["toId"] as? String ?? ""
         self.fromId = dicitionary["fromId"] as? String ?? ""
         self.timestamp = dicitionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
-        
         self.isFromCurrentUser = fromId == Auth.auth().currentUser?.uid
     }
 }
@@ -34,5 +31,4 @@ struct  Message {
 struct Conversation {
     let  user: User
     let message: Message
-    
 }

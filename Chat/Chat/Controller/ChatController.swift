@@ -11,6 +11,7 @@ import UIKit
 private let resuseIdentifier = "MessageCell"
 
 class ChatController: UICollectionViewController{
+    
     //MARK: -- Property
     private let user: User
     private var messages = [Message]()

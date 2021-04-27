@@ -100,9 +100,11 @@ class ConversationsCntroller: UIViewController{
         view.backgroundColor = .white
         
        configureNavigationBar(withTitle: "Messages", prefersLargeTitles: true)
-        configureTableView()
+       configureTableView()
         
-        let image = UIImage(systemName: "person.circle.fill")
+//        let image = UIImage(systemName: "person.circle.fill")
+//          let image = UIImage(systemName: "refresh")
+        let image = #imageLiteral(resourceName: "icons8-logout-rounded-left-24")
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(showProfile))
         
         view.addSubview(newMessageButton)
